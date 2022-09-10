@@ -2,7 +2,7 @@
 FROM node:latest as node
 WORKDIR /app
 COPY . .
-RUN npm install
+RUN npm install npm@6.0
 RUN npm run build --prod
 
 
