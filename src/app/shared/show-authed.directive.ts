@@ -3,12 +3,15 @@ import {
   Input,
   OnInit,
   TemplateRef,
-  ViewContainerRef
-} from '@angular/core';
+  ViewContainerRef,
+  ViewRef,
+} from "@angular/core";
+import { UserService } from "../core/services/user.service";
 
-import { UserService } from '../core';
-
-@Directive({ selector: '[appShowAuthed]' })
+@Directive({
+  selector: "[appShowAuthed]",
+  standalone: true,
+})
 export class ShowAuthedDirective implements OnInit {
   constructor(
     private templateRef: TemplateRef<any>,
@@ -16,22 +19,28 @@ export class ShowAuthedDirective implements OnInit {
     private viewContainer: ViewContainerRef
   ) {}
 
-  condition: boolean;
+  condition: boolean = false;
+
+  authRef: ViewRef | undefined;
 
   ngOnInit() {
-    this.userService.isAuthenticated.subscribe(
-      (isAuthenticated) => {
-        if (isAuthenticated && this.condition || !isAuthenticated && !this.condition) {
-          this.viewContainer.createEmbeddedView(this.templateRef);
-        } else {
-          this.viewContainer.clear();
+    this.userService.isAuthenticated.subscribe((isAuthenticated: boolean) => {
+      if (
+        (isAuthenticated && this.condition) ||
+        (!isAuthenticated && !this.condition)
+      ) {
+        if (!this.authRef) {
+          this.authRef = this.viewContainer.createEmbeddedView(
+            this.templateRef
+          );
         }
+      } else {
+        this.viewContainer.clear();
       }
-    );
+    });
   }
 
   @Input() set appShowAuthed(condition: boolean) {
     this.condition = condition;
   }
-
 }

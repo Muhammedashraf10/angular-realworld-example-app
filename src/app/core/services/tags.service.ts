@@ -1,18 +1,15 @@
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Injectable } from "@angular/core";
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
+import { HttpClient } from "@angular/common/http";
 
-import { ApiService } from './api.service';
-import { map } from 'rxjs/operators';
-
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class TagsService {
-  constructor (
-    private apiService: ApiService
-  ) {}
+  constructor(private readonly http: HttpClient) {}
 
-  getAll(): Observable<[string]> {
-    return this.apiService.get('/tags')
-          .pipe(map(data => data.tags));
+  getAll(): Observable<string[]> {
+    return this.http
+      .get<{ tags: string[] }>("/tags")
+      .pipe(map((data) => data.tags));
   }
-
 }
